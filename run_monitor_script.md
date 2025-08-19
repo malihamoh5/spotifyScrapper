@@ -1,0 +1,1 @@
+nohup ./spotify-monitor.sh > spotify-monitor.log 2>&1 &

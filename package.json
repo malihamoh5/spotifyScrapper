@@ -1,0 +1,25 @@
+{
+    "name": "spotify-playlist-scraper",
+    "version": "1.0.0",
+    "description": "System for scraping Spotify playlist data",
+    "main": "spotify-scraper.js",
+    "scripts": {
+        "start": "./spotify-monitor.sh",
+        "token": "node spotify-token-manager.js",
+        "deduplicate": "./data-deduplicator.py",
+        "combine": "./data-combiner.py"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.8.4",
+        "config": "^3.3.12",
+        "csv-parse": "^5.5.6",
+        "csv-parser": "^3.0.0",
+        "fs": "^0.0.1-security",
+        "p-limit": "^5.0.0",
+        "papaparse": "^5.4.1",
+        "puppeteer": "^22.10.0",
+        "util": "^0.12.5"
+    }
+}
