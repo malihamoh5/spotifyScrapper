@@ -20,22 +20,37 @@ bytes_to_gb() {
 while true; do
     # Get today's date and format it to match the file naming convention
     today=$(date +%y%m%d)
-    file_name="${today}_output.csv"
+    file_pattern="${today}_output_part_*.csv"
     
     # Current timestamp for logging
     timestamp=$(date)
 
-    # Check if the file exists
-    if [ -f "$file_name" ]; then
-        # Get the file size in bytes
-        file_size=$(stat -c %s "$file_name")
+    # Check if any output files exist for today
+    if ls $file_pattern 1> /dev/null 2>&1; then
+        # Calculate total size of all output files
+        total_size=0
+        file_count=0
+        
+        for file_name in $file_pattern; do
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS
+                file_size=$(stat -f %z "$file_name")
+            else
+                # Linux
+                file_size=$(stat -c %s "$file_name")
+            fi
+            total_size=$((total_size + file_size))
+            file_count=$((file_count + 1))
+        done
 
-        # Convert file size to gigabytes
-        file_size_gb=$(bytes_to_gb "$file_size")
+        # Convert total size to gigabytes
+        total_size_gb=$(bytes_to_gb "$total_size")
 
-        # Restart if file is smaller than the configured size
-        if (( $(echo "$file_size_gb < $MIN_SIZE_GB" | bc -l) )); then
-            echo "$timestamp: File size ($file_size_gb GB) is below threshold ($MIN_SIZE_GB GB)"
+        echo "$timestamp: Found $file_count output files, total size: $total_size_gb GB"
+
+        # Restart if total size is smaller than the configured size
+        if (( $(echo "$total_size_gb < $MIN_SIZE_GB" | bc -l) )); then
+            echo "$timestamp: Total file size ($total_size_gb GB) is below threshold ($MIN_SIZE_GB GB)"
             echo "$timestamp: Stopping all PM2 processes..."
             pm2 delete all
 
@@ -44,10 +59,10 @@ while true; do
             
             echo "$timestamp: Processes restarted. Waiting for $CHECK_INTERVAL minutes..."
         else
-            echo "$timestamp: File size ($file_size_gb GB) is sufficient. No restart needed."
+            echo "$timestamp: Total file size ($total_size_gb GB) is sufficient. No restart needed."
         fi
     else
-        echo "$timestamp: Output file for today not found. Starting scraper processes..."
+        echo "$timestamp: No output files found for today. Starting scraper processes..."
         node start-scrapers.js
         echo "$timestamp: Processes started. Waiting for $CHECK_INTERVAL minutes..."
     fi

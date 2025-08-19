@@ -9,7 +9,7 @@ echo "Setting up Spotify Scraper System..."
 directories=(
   "playlists"
   "temp_chunks"
-  "05_Playlists"
+  "05_playlists"
 )
 
 for dir in "${directories[@]}"; do

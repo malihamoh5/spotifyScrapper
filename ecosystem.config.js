@@ -8,17 +8,18 @@ const path = require("path");
 
 // Configure the number of scraper instances to run
 // *** Change this value to increase/decrease the number of scrapers ***
-const NUM_SCRAPERS = 5;
+const NUM_SCRAPERS = 10;
 
 // Helper function to generate a scraper process
 function generateScraperProcess(id) {
   return {
     name: `spotify-scraper-${id}`,
     script: "spotify-scraper.js",
-    node_args: "--max-old-space-size=4096",
+    node_args: "--max-old-space-size=8192",
     env: {
-      CSV_FILE_PATH: `../05_playlists/playlists_part_${String(id).padStart(3, '0')}.csv`,
-      CHECKPOINT_FILE_NAME: `../05_playlists/checkpoint_${id}.json`
+      CSV_FILE_PATH: `05_playlists/playlists_part_${String(id).padStart(3, '0')}.csv`,
+      CHECKPOINT_FILE_NAME: `05_playlists/checkpoint_${id}.json`,
+      SCRAPER_ID: String(id)
     },
     autorestart: true,
     max_restarts: 10,
@@ -27,7 +28,7 @@ function generateScraperProcess(id) {
 }
 
 // Ensure playlist files exist
-const playlistsDir = path.resolve(__dirname, "../05_playlists");
+const playlistsDir = path.resolve(__dirname, "05_playlists");
 if (!fs.existsSync(playlistsDir)) {
   fs.mkdirSync(playlistsDir, { recursive: true });
   console.log("Created playlists directory.");

@@ -15,7 +15,7 @@ try {
   execSync("node spotify-token-manager.js", { stdio: "inherit" });
   
   // Create the playlists directory if it doesn't exist
-  const playlistsDir = path.resolve(__dirname, "../05_playlists");
+  const playlistsDir = path.resolve(__dirname, "05_playlists");
   if (!fs.existsSync(playlistsDir)) {
     fs.mkdirSync(playlistsDir, { recursive: true });
     console.log("Created playlists directory.");
