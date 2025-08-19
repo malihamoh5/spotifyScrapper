@@ -228,7 +228,9 @@ function ensureFileExists(filePath, headers) {
 async function main() {
   // Get the current date in YYMMDD format
   const currentDate = new Date().toISOString().slice(2, 10).replace(/-/g, "");
-  const outputFile = `${currentDate}_output.csv`;
+  // Each scraper instance writes to its own file to avoid conflicts
+  const scraperId = process.env.SCRAPER_ID || '1';
+  const outputFile = `${currentDate}_output_part_${scraperId}.csv`;
 
   const headers = [
     "Name",
